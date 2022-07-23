@@ -65,6 +65,7 @@ public class Persist {
             Session session = sessionFactory.openSession();
             Transaction transaction = session.beginTransaction();
             Client client = new Client(clientName, password, Utils.createHash(clientName, password), phoneNumber);
+            session.save(client);
             transaction.commit();
             session.close();
             if (client.id != 0) {
