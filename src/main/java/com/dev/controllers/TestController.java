@@ -1,13 +1,11 @@
 package com.dev.controllers;
 
 import com.dev.Persist;
-import com.dev.objects.Organizations;
-import com.dev.objects.Sale;
-import com.dev.objects.Store;
-import com.dev.objects.UserObject;
-import com.dev.utils.MessagesHandler;
+import com.dev.objects.*;
+//import com.dev.utils.MessagesHandler;
 import org.springframework.beans.NotWritablePropertyException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -24,12 +22,12 @@ import java.util.Objects;
 public class TestController {
     @Autowired
     private Persist persist;
-    private MessagesHandler messagesHandler;
-
-
-    public TestController(MessagesHandler messagesHandler) {
-        this.messagesHandler = messagesHandler;
-    }
+//    private MessagesHandler messagesHandler;
+//
+//
+//    public TestController(MessagesHandler messagesHandler) {
+//        this.messagesHandler = messagesHandler;
+//    }
 
     @PostConstruct
     private void init () {
@@ -37,96 +35,52 @@ public class TestController {
 
 
     }
-    @RequestMapping(value ="add-user" , method = RequestMethod.POST)
-    public boolean addUser (@RequestParam String username ,String password){
-       return persist.addUser(username,password);
+    @RequestMapping(value = "create-client" ,method = RequestMethod.POST)
+    public boolean addClient (@RequestParam String clientName , String password ,String phoneNumber){
+        return persist.createClient(clientName,password,phoneNumber);
     }
-    @RequestMapping(value = "log-in")
-    public String logIn (String username , String password){
-        return persist.logIn(username,password);
+    @RequestMapping(value ="login")
+    public String login ( String password , String phoneNumber){
+        return persist.logIn(password,phoneNumber);
     }
-
-    @RequestMapping(value = "if-first-log-in")
-    public boolean doseFirstLogIn (String token){
-        return persist.firstLogIn(token);
+    @RequestMapping ( value = "get-client")
+    public Client getClient (String token){
+        return persist.getClientByToken(token);
     }
-    @RequestMapping(value = "inc_first_log_in",method = RequestMethod.POST )
-    public void incFirstLogIn (@RequestParam String token){
-        persist.incFirstLogIn(token);
-
+    @RequestMapping (value = "get-clients-appointments")
+    public List <Appointment> getClientsAppointments (String token){
+        return persist.getAppointmentsForClient(token);
     }
-    @RequestMapping(value = "get-organizations")
-    public List<Organizations> getOrganizations (){
-        return persist.gatOrganizations();
+    @RequestMapping (value = "get-appointment-by-id")
+    public Appointment getAppointmentByID (int id){
+        return persist.getAppointmentById(id);
     }
-   @RequestMapping (value = "get-sales-by-user")
-    public List<Sale> getSalesForUser (String token){
-        return persist.getSaleForUser(token);
-   }
-
-    @RequestMapping (value = "get-all-sales")
-    public List<Sale> getAllSalesByToken (){
-        return persist.getAllSalesByToken();
+    @RequestMapping(value = "get-all-appointments")
+    public List<Appointment> getAllAppointments(){
+        return persist.getAppointments();
     }
-   @RequestMapping (value = "change-setting" )
-    public boolean changeSetting ( String token , int organizationId){
-      return   persist.changeSettingForUserAndOrganization( token , organizationId);
+    @RequestMapping(value = "get-employee-by-id")
+    public Employee getEmployeeById (int id){
+        return persist.getEmployeeById(id);
     }
-    @RequestMapping(value = "get-sales-by-store-id")
-    public List<Sale> getSaleForStore (int storeId){
-        return persist.getSalesForStore(storeId);
+    @RequestMapping(value = "gey-all-employees")
+    public List<Employee> getAllEmployees (){
+        return persist.getEmployees();
     }
-   @RequestMapping(value = "get-store-name-by-store-id")
-    public String getStoreNameById (int storeId){
-        return persist.getStoreById(storeId).getStoreName();
-   }
-   @RequestMapping(value = "if-sale-belong-to-user")
-    public boolean doseSaleBelongToUser (String token , int saleId){
-        return persist.doseSaleBelongToUser(token,saleId);
-   }
-   @RequestMapping(value = "get-all-stores")
-    public List<Store> getStores (){
-        return persist.getStores();
-   }
-   @RequestMapping(value = "if-user-belong-to-organization")
-    public boolean doseUserBelongToOrganization (String token , int organizationId){
-      return persist.doseUserBelongToOrganization(token,organizationId);
-   }
-
-   @RequestMapping(value = "get-organization-for-user")
-    public List<Organizations> gatOrganizationsForUser (String token){
-        return persist.gatOrganizationsForUser(token);
-   }
-
-
-   @RequestMapping(value = "get-start-sales")
-    public List<Sale> getStartSales (){
-        return persist.getStartSales();
+    @RequestMapping(value = "get-employees-by-role")
+    public List<Employee> getEmployeesByRole (String role){
+        return persist.getEmployeesByRole(role);
     }
-
-    @RequestMapping(value = "get-users-to-send-start-sales")
-    public List<UserObject> getUsersToSendStartSales (){
-        return persist.getUsersToSendStartSales();
+    @RequestMapping(value = "get-employees-appointments")
+    public List<Appointment> getEmployeesAppointment (int id ){
+        return persist.gatAppointmentForEmployee(id);
     }
-    @RequestMapping(value = "get-users-to-send-end-sales")
-    public List<UserObject> getUsersToSendEndSales (){
-        return persist.getUsersToSendEndSales();
+    @RequestMapping (value = "add-appointment",method = RequestMethod.POST)
+    public void addAppointment (@RequestParam String token , int employeeId , String date , String startTime , String endTime){
+         persist.addAppointment(token,employeeId,date,startTime,endTime);
     }
-
-
-   //    public void startSale () {
-//        String sOe;
-//        List<Sale> sales=persist.getAllSales();
-//        for(Sale sale:sales){
-//            if(Objects.equals(sale.getStartDate(), "11-1-2022")){
-//                sOe="start";
-//                messagesHandler.sendSaleToUser(sale.getSaleText(),sOe);}
-//            if(Objects.equals(sale.getEndDate(), "11-1-2022")){
-//                sOe="end";
-//                messagesHandler.sendSaleToUser(sale.getSaleText(),sOe);}
-//        }
-//
-//    }
-
-
+    @RequestMapping (value ="delete-appointment",method = RequestMethod.POST)
+    public void deleteAppointment (@RequestParam  String token , int appointmentId ){
+        persist.deleteAppointmentForClient(token,appointmentId);
+    }
 }
