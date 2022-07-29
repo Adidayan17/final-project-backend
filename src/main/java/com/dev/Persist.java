@@ -146,7 +146,7 @@ public class Persist {
   // get employees by role
     public List<Employee> getEmployeesByRole ( String role){
         Session session = sessionFactory.openSession();
-        List<Employee> employees = session.createQuery("FROM Employee e WHERE e.role =:role").setParameter("role",role)
+        List<Employee> employees = session.createQuery(" FROM Employee e WHERE e.role =:role").setParameter("role",role)
                 .list();
         session.close();
         return employees;
@@ -154,14 +154,16 @@ public class Persist {
     }
 
 // get appointments list for employee
-    public List<Appointment> gatAppointmentForEmployee (int employeeId ){
+    public List<Appointment> gatAppointmentForEmployee (int employeeId , String date  ){
          Session session =sessionFactory.openSession();
-        List <Appointment> appointments = session.createQuery(" FROM Appointment a WHERE a.employee.id=:id ")
-                .setParameter("id",employeeId)
+        List <Appointment> appointments = session.createQuery(" FROM Appointment a WHERE a.employee.id=:employeeId AND a.date=:date")
+                .setParameter("employeeId",employeeId).setParameter("date",date)
                 .list();
         session.close();
         return appointments;
     }
+
+
     // add appointment
 
     public void addAppointment ( String token , int employeeId , String date , String startTime , String endTime  ){

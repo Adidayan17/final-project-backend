@@ -2,7 +2,6 @@ package com.dev.objects;
 
 
 import javax.persistence.*;
-import java.util.List;
 
 @Entity
 @Table(name = "appointment")
@@ -10,10 +9,10 @@ public class Appointment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column (name="id")
-    public int id;
+    public Integer id;
 
     @Column (name = "appointment_date")
-    private String appointmentDate;
+    private String date;
     @Column (name = "start_time")
     private String startTime;
     @Column (name = "end_time")
@@ -31,7 +30,7 @@ public class Appointment {
     public Appointment (Client client , Employee employee , String date , String startTime , String endTime){
         this.client = client;
         this.employee = employee ;
-        this.appointmentDate= date ;
+        this.date = date ;
         this.startTime =startTime;
         this.endTime = endTime ;
 
@@ -50,12 +49,12 @@ public class Appointment {
         this.id = id;
     }
 
-    public String getAppointmentDate() {
-        return appointmentDate;
+    public String getDate() {
+        return date;
     }
 
-    public void setAppointmentDate(String appointmentDate) {
-        this.appointmentDate = appointmentDate;
+    public void setDate(String appointmentDate) {
+        this.date = appointmentDate;
     }
 
     public String getStartTime() {

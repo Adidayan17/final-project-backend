@@ -9,7 +9,7 @@ public class Client {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column (name="id")
-    public int id;
+    public Integer id;
 
     @Column (name="client_name")
     private String clientName;

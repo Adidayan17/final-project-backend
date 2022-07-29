@@ -72,8 +72,8 @@ public class TestController {
         return persist.getEmployeesByRole(role);
     }
     @RequestMapping(value = "get-employees-appointments")
-    public List<Appointment> getEmployeesAppointment (int id ){
-        return persist.gatAppointmentForEmployee(id);
+    public List<Appointment> getEmployeesAppointment (int employeeId ,String date  ){
+        return persist.gatAppointmentForEmployee(employeeId, date );
     }
     @RequestMapping (value = "add-appointment",method = RequestMethod.POST)
     public void addAppointment (@RequestParam String token , int employeeId , String date , String startTime , String endTime){
