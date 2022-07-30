@@ -164,13 +164,11 @@ public class Persist {
     }
 
 
-    // add appointment
-
-    public void addAppointment ( String token , int employeeId , String date , String startTime , String endTime  ){
+    public void addAppointment ( String token , int employeeId , String date , String startTime  ){
 
         Session session= sessionFactory.openSession();
         Transaction transaction = session.beginTransaction();
-        Appointment appointment = new Appointment(getClientByToken(token),getEmployeeById(employeeId),date ,startTime ,endTime);
+        Appointment appointment = new Appointment(getClientByToken(token),getEmployeeById(employeeId),date ,startTime );
         session.save(appointment);
         transaction.commit();
         session.close();

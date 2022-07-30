@@ -76,8 +76,8 @@ public class TestController {
         return persist.gatAppointmentForEmployee(employeeId, date );
     }
     @RequestMapping (value = "add-appointment",method = RequestMethod.POST)
-    public void addAppointment (@RequestParam String token , int employeeId , String date , String startTime , String endTime){
-         persist.addAppointment(token,employeeId,date,startTime,endTime);
+    public void addAppointment (@RequestParam String token , int employeeId , String date , String startTime){
+         persist.addAppointment(token,employeeId,date,startTime);
     }
     @RequestMapping (value ="delete-appointment",method = RequestMethod.POST)
     public void deleteAppointment (@RequestParam  String token , int appointmentId ){

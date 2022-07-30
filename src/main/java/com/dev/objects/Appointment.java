@@ -27,12 +27,12 @@ public class Appointment {
 
 
 
-    public Appointment (Client client , Employee employee , String date , String startTime , String endTime){
+    public Appointment (Client client , Employee employee , String date , String startTime ){
         this.client = client;
         this.employee = employee ;
         this.date = date ;
         this.startTime =startTime;
-        this.endTime = endTime ;
+
 
     }
 
