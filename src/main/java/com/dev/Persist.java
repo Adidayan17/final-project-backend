@@ -122,15 +122,6 @@ public class Persist {
 
     }
 
-    // get  appointment
-//    public Appointment getAppointmentById (int id){
-//        Session session= sessionFactory.openSession();
-//        Appointment appointment = (Appointment) session.createQuery("FROM Appointment a WHERE a.id =:id").
-//                setParameter("id",id).uniqueResult();
-//        session.close();
-//        return appointment;
-//
-//    }
     ///// get all appointments
 
     public List<Appointment> getAppointments (){
