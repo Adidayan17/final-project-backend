@@ -117,13 +117,14 @@ public class Persist {
         DateFormat formatter = new SimpleDateFormat("dd-MM-yyyy");
         String date = formatter.format(new Date());
 
-        return getFutureAppointments(date.toString() ,appointments );
+        return getFutureAppointments(appointments );
 
     }
 
 
-    public List<Appointment> getFutureAppointments(String date , List<Appointment> appointments) {
-
+    public List<Appointment> getFutureAppointments( List<Appointment> appointments) {
+        DateFormat formatter = new SimpleDateFormat("dd-MM-yyyy");
+        String date = (formatter.format(new Date())).toString();
         List<Appointment> futureAppointments = new ArrayList();
         String frontDay = date.substring(0, 2);
         String frontMonth = date.substring(3, 5);
@@ -139,7 +140,7 @@ public class Persist {
                     if (Integer.parseInt(formatMonth) > Integer.parseInt(frontMonth)) {
                         futureAppointments.add(appointment);
                     } else if (Integer.parseInt(formatMonth) == Integer.parseInt(frontMonth)) {
-                        if (Integer.parseInt(formatDay) >= Integer.parseInt(frontDay)) {
+                        if (Integer.parseInt(formatDay) > Integer.parseInt(frontDay)) {
                             futureAppointments.add(appointment);
 
                         }
@@ -168,8 +169,7 @@ public class Persist {
                 .setParameter("token", token)
                 .list();
         session.close();
-        return appointments;
-
+               return getFutureAppointments(appointments );
 
     }
 
