@@ -9,6 +9,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.support.TransactionTemplate;
 
+
+
+import java.text.DateFormat;
+import java.text.ParseException;
+
 import javax.annotation.PostConstruct;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -56,11 +61,11 @@ public class Persist {
         if (client != null) {
             return false;
         }
-        return  true;
+        return true;
     }
 
 
-    public boolean createClient (String clientName, String password ,String phoneNumber ) {
+    public boolean createClient(String clientName, String password, String phoneNumber) {
         if (doseClientPhoneAvailable(phoneNumber)) {
             Session session = sessionFactory.openSession();
             Transaction transaction = session.beginTransaction();
@@ -77,34 +82,90 @@ public class Persist {
 
     // client log in
 
-    public String logIn( String password , String phoneNumber ) {
+    public String logIn(String password, String phoneNumber) {
         Session session = sessionFactory.openSession();
-        Client client = (Client) session.createQuery( "FROM Client c WHERE  c.password=:password AND c.phoneNumber=:phoneNumber ")
-                .setParameter("password",password).setParameter("phoneNumber",phoneNumber)
+        Client client = (Client) session.createQuery("FROM Client c WHERE  c.password=:password AND c.phoneNumber=:phoneNumber ")
+                .setParameter("password", password).setParameter("phoneNumber", phoneNumber)
                 .uniqueResult();
         session.close();
         if (client != null) {
             return client.getToken();
         }
-        return  null ;
+        return null;
 
     }
 
     // get client
 
-    public  Client getClientByToken (String token){
+    public Client getClientByToken(String token) {
         Session session = sessionFactory.openSession();
-        Client client = (Client) session.createQuery("FROM Client c WHERE c.token=:token").setParameter("token",token)
+        Client client = (Client) session.createQuery("FROM Client c WHERE c.token=:token").setParameter("token", token)
                 .uniqueResult();
         session.close();
         return client;
     }
 
-    // get appointments for client
+    // get appointments for client by role
 
-    public List<Appointment> getAppointmentsForClient (String token){
+    public List<Appointment> getAppointmentsForClientByRole(String token, String role ) {
         Session session = sessionFactory.openSession();
-        List<Appointment> appointments = session.createQuery("FROM Appointment a WHERE a.client.token=:token").setParameter("token",token)
+        List<Appointment> appointments = session.createQuery("FROM Appointment a WHERE a.client.token=:token AND a.employee.role=:role ")
+                .setParameter("token", token).setParameter("role", role)
+                .list();
+        session.close();
+
+        DateFormat formatter = new SimpleDateFormat("dd-MM-yyyy");
+        String date = formatter.format(new Date());
+
+        return getFutureAppointments(date.toString() ,appointments );
+
+    }
+
+
+    public List<Appointment> getFutureAppointments(String date , List<Appointment> appointments) {
+
+        List<Appointment> futureAppointments = new ArrayList();
+        String frontDay = date.substring(0, 2);
+        String frontMonth = date.substring(3, 5);
+        String frontYear = date.substring(6, 10);
+        if (appointments != null) {
+            for (Appointment appointment : appointments) {
+                String formatDay = appointment.getDate().substring(0, 2);
+                String formatMonth = appointment.getDate().substring(3, 5);
+                String formatYear = appointment.getDate().substring(6, 10);
+                if (Integer.parseInt(formatYear) > Integer.parseInt(frontYear)) {
+                    futureAppointments.add(appointment);
+                } else if (Integer.parseInt(formatYear) == Integer.parseInt(frontYear)) {
+                    if (Integer.parseInt(formatMonth) > Integer.parseInt(frontMonth)) {
+                        futureAppointments.add(appointment);
+                    } else if (Integer.parseInt(formatMonth) == Integer.parseInt(frontMonth)) {
+                        if (Integer.parseInt(formatDay) > Integer.parseInt(frontDay)) {
+                            futureAppointments.add(appointment);
+
+                        }
+                    }
+                }
+            }
+        }
+
+        return futureAppointments;
+    }
+
+
+
+
+
+
+
+
+
+
+    // get  all appointments for client
+
+    public List<Appointment> getAppointmentsForClient(String token) {
+        Session session = sessionFactory.openSession();
+        List<Appointment> appointments = session.createQuery("FROM Appointment a WHERE a.client.token=:token ")
+                .setParameter("token", token)
                 .list();
         session.close();
         return appointments;
@@ -112,11 +173,11 @@ public class Persist {
 
     }
 
-// get  appointment
-    public Appointment getAppointmentById (int id){
-        Session session= sessionFactory.openSession();
+    // get  appointment
+    public Appointment getAppointmentById(int id) {
+        Session session = sessionFactory.openSession();
         Appointment appointment = (Appointment) session.createQuery("FROM Appointment a WHERE a.id =:id").
-                setParameter("id",id).uniqueResult();
+                setParameter("id", id).uniqueResult();
         session.close();
         return appointment;
 
@@ -124,52 +185,52 @@ public class Persist {
 
     ///// get all appointments
 
-    public List<Appointment> getAppointments (){
+    public List<Appointment> getAppointments() {
         return sessionFactory.openSession().createQuery("FROM Appointment").list();
     }
 
-// get  employee
-    public Employee getEmployeeById ( int id){
+    // get  employee
+    public Employee getEmployeeById(int id) {
         Session session = sessionFactory.openSession();
-        Employee employee = (Employee) session.createQuery("FROM Employee e WHERE  e.id =:id").setParameter("id",id)
+        Employee employee = (Employee) session.createQuery("FROM Employee e WHERE  e.id =:id").setParameter("id", id)
                 .uniqueResult();
         session.close();
-        return employee ;
+        return employee;
 
 
     }
 // get all employees
 
-    public List<Employee> getEmployees (){
+    public List<Employee> getEmployees() {
         return sessionFactory.openSession().createQuery("FROM Employee ").list();
     }
 
-  // get employees by role
-    public List<Employee> getEmployeesByRole ( String role){
+    // get employees by role
+    public List<Employee> getEmployeesByRole(String role) {
         Session session = sessionFactory.openSession();
-        List<Employee> employees = session.createQuery(" FROM Employee e WHERE e.role =:role").setParameter("role",role)
+        List<Employee> employees = session.createQuery(" FROM Employee e WHERE e.role =:role").setParameter("role", role)
                 .list();
         session.close();
         return employees;
 
     }
 
-// get appointments list for employee
-    public List<Appointment> gatAppointmentForEmployee (int employeeId , String date  ){
-         Session session =sessionFactory.openSession();
-        List <Appointment> appointments = session.createQuery(" FROM Appointment a WHERE a.employee.id=:employeeId AND a.date=:date")
-                .setParameter("employeeId",employeeId).setParameter("date",date)
+    // get appointments list for employee
+    public List<Appointment> gatAppointmentForEmployee(int employeeId, String date) {
+        Session session = sessionFactory.openSession();
+        List<Appointment> appointments = session.createQuery(" FROM Appointment a WHERE a.employee.id=:employeeId AND a.date=:date")
+                .setParameter("employeeId", employeeId).setParameter("date", date)
                 .list();
         session.close();
         return appointments;
     }
 
 
-    public void addAppointment ( String token , int employeeId , String date , String startTime  ){
+    public void addAppointment(String token, int employeeId, String date, String startTime) {
 
-        Session session= sessionFactory.openSession();
+        Session session = sessionFactory.openSession();
         Transaction transaction = session.beginTransaction();
-        Appointment appointment = new Appointment(getClientByToken(token),getEmployeeById(employeeId),date ,startTime );
+        Appointment appointment = new Appointment(getClientByToken(token), getEmployeeById(employeeId), date, startTime);
         session.save(appointment);
         transaction.commit();
         session.close();
@@ -178,11 +239,11 @@ public class Persist {
     }
 
     // delete appointment
-    public  void deleteAppointmentForClient ( String token , int appointmentId ){
+    public void deleteAppointmentForClient(String token, int appointmentId) {
         Session session = sessionFactory.openSession();
         Transaction transaction = session.beginTransaction();
 
-        Appointment appointment = (Appointment) session.load(Appointment.class,appointmentId);
+        Appointment appointment = (Appointment) session.load(Appointment.class, appointmentId);
         session.delete(appointment);
         transaction.commit();
         session.close();
@@ -190,22 +251,9 @@ public class Persist {
 
     }
 
+
+
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

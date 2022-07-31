@@ -49,7 +49,12 @@ public class TestController {
     }
     @RequestMapping (value = "get-clients-appointments")
     public List <Appointment> getClientsAppointments (String token){
-        return persist.getAppointmentsForClient(token);
+        return persist.getAppointmentsForClient(token );
+    }
+    @RequestMapping (value = "get-clients-appointments-by-role")
+    public List <Appointment> getClientsAppointmentsByRole (String token, String role){
+
+        return persist.getAppointmentsForClientByRole(token , role);
     }
     @RequestMapping (value = "get-appointment-by-id")
     public Appointment getAppointmentByID (int id){
