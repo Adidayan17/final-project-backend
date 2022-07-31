@@ -139,7 +139,7 @@ public class Persist {
                     if (Integer.parseInt(formatMonth) > Integer.parseInt(frontMonth)) {
                         futureAppointments.add(appointment);
                     } else if (Integer.parseInt(formatMonth) == Integer.parseInt(frontMonth)) {
-                        if (Integer.parseInt(formatDay) > Integer.parseInt(frontDay)) {
+                        if (Integer.parseInt(formatDay) >= Integer.parseInt(frontDay)) {
                             futureAppointments.add(appointment);
 
                         }
