@@ -20,9 +20,12 @@ public class Class {
         @Column (name = "end_time")
         private String endTime ;
 
+        @Column(name = "subject")
+        private String subject;
+
         @ManyToOne
         @JoinColumn(name="lecturer")
-        private Lecturer lecturer;
+        private User lecturer;
 
 
     public Class (){
@@ -61,11 +64,19 @@ public class Class {
         this.endTime = endTime;
     }
 
-    public Lecturer getLecturer() {
+    public User getLecturer() {
         return lecturer;
     }
 
-    public void setLecturer(Lecturer lecturer) {
+    public void setLecturer(User lecturer) {
         this.lecturer = lecturer;
+    }
+
+    public String getSubject() {
+        return subject;
+    }
+
+    public void setSubject(String subject) {
+        this.subject = subject;
     }
 }

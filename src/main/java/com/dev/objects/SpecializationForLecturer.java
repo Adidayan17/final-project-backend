@@ -4,7 +4,7 @@ import javax.persistence.*;
 
 @Entity
 @Table(name = "lecturer")
-public class Specialization {
+public class SpecializationForLecturer {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="id")
@@ -15,9 +15,9 @@ public class Specialization {
 
     @ManyToOne
     @JoinColumn(name="lecturer")
-    private Lecturer lecturer;
+    private  User lecturer;
 
-    public Specialization(){
+    public SpecializationForLecturer(){
 
     }
 
@@ -37,11 +37,11 @@ public class Specialization {
         this.name = name;
     }
 
-    public Lecturer getLecturer() {
+    public User getLecturer() {
         return lecturer;
     }
 
-    public void setLecturer(Lecturer lecturer) {
+    public void setLecturer(User lecturer) {
         this.lecturer = lecturer;
     }
 }

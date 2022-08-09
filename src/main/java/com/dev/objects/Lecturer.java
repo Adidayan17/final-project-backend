@@ -21,17 +21,16 @@ public class Lecturer {
     @Column (name = "email")
     private String email ;
 
-    @Transient
-    private List<Specialization> specialization;
-
-
-
     public Lecturer(){
 
     }
+    public Lecturer(String name , String phone , String email){
+        this.name=name;
+        this.phone = phone;
+        this.email= email;
+    }
 
-    public Integer getId() {
-        return id;
+    public Integer getId() {return id;
     }
 
     public void setId(Integer id) {
@@ -62,13 +61,7 @@ public class Lecturer {
         this.email = email;
     }
 
-    public List<Specialization> getSpecialization() {
-        return specialization;
-    }
 
-    public void setSpecialization(List<Specialization> specialization) {
-        this.specialization = specialization;
-    }
 }
 
 //

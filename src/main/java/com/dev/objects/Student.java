@@ -25,6 +25,20 @@ public class Student {
     public Student(){
 
     }
+    public Student(String name , String phone , String email , String department){
+        this.name = name;
+        this.phone = phone;
+        this.email = email;
+        this.department = department;
+    }
+
+    public Student(Student student){
+        this.id = student.getId();
+        this.name = student.getName();
+        this.phone = student.getPhone();
+        this.email = student.getEmail();
+        this.department = student.getDepartment();
+    }
 
     public Integer getId() {
         return id;
