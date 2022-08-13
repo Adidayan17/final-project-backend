@@ -3,21 +3,27 @@ package com.dev.objects;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "lecturer")
+@Table(name = "Specialization_for_lecturer")
 public class SpecializationForLecturer {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="id")
     public Integer id;
 
-    @Column (name="name")
-    private String name ;
+    @ManyToOne
+    @JoinColumn(name="specialization")
+    private Specialization specialization;
 
     @ManyToOne
     @JoinColumn(name="lecturer")
     private  User lecturer;
 
     public SpecializationForLecturer(){
+
+    }
+    public SpecializationForLecturer( Specialization specialization ,User lecturer){
+        this.specialization = specialization;
+        this.lecturer = lecturer;
 
     }
 
@@ -29,12 +35,12 @@ public class SpecializationForLecturer {
         this.id = id;
     }
 
-    public String getName() {
-        return name;
+    public Specialization getSpecialization() {
+        return specialization;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setSpecialization(Specialization specialization) {
+        this.specialization = specialization;
     }
 
     public User getLecturer() {

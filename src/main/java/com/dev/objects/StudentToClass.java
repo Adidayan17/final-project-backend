@@ -3,8 +3,8 @@ package com.dev.objects;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "class")
-public class StodentToClass {
+@Table(name = "Student_to_class")
+public class StudentToClass {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column (name="id")
@@ -17,6 +17,14 @@ public class StodentToClass {
     @ManyToOne
     @JoinColumn(name="student")
     private User student;
+
+    public StudentToClass(){
+
+    }
+    public StudentToClass(Class aClass , User student){
+        this.aClass = aClass;
+        this.student = student;
+    }
 
     public Integer getId() {
         return id;

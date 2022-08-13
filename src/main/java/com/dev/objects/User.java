@@ -3,74 +3,77 @@ package com.dev.objects;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "student")
+@Table(name = "user")
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column (name="id")
+    @Column(name = "id")
     public Integer id;
 
-    @Column (name="name")
-    private String name ;
+    @Column(name = "name")
+    private String name;
 
-    @Column (name = "phone")
-    private String phone ;
+    @Column(name = "phone")
+    private String phone;
 
-    @Column (name = "email")
-    private String email ;
+    @Column(name = "email")
+    private String email;
 
-    @Column (name = "department ")
-    private String department ;
-
-    @Column (name = "student")
-    private int student =0;
+    @Column(name = "student")
+    private int student;
 
     @Column(name = "lecturer")
-    private int lecturer=0;
+    private int lecturer;
 
-    @Column (name="password")
+    @Column(name = "password")
     private String password;
 
-    @Column (name="token")
+    @Column(name = "token")
     private String token;
 
-    public User(){
+    @Column(name = "first_log_in")
+    private int firstLogIn;
+
+
+    public User() {
 
     }
-    public User(String name , String phone , String email , String department , String password, String type){
+
+    public User(String name, String phone, String email, String password, String type) {
 
         this.name = name;
         this.phone = phone;
         this.email = email;
-        this.department = department;
-        this.password=password;
-        switch (type){
+        this.password = password;
+        switch (type) {
             case "student":
                 this.student = 1;
                 break;
             case "lecturer":
-                this.lecturer=1;
+                this.lecturer = 1;
                 break;
             case "both":
-                this.lecturer =1;
-                this.student =1;
+                this.lecturer = 1;
+                this.student = 1;
                 break;
 
         }
+        this.firstLogIn = 1;
 
 
     }
 
-    public User(User user){
+    public User(User user) {
         this.id = user.getId();
         this.name = user.getName();
         this.phone = user.getPhone();
         this.email = user.getEmail();
-        this.department = user.getDepartment();
-        this.password=user.getPassword();
-        this.student= user.getStudent();
-        this.lecturer=user.getLecturer();
+        this.password = user.getPassword();
+        this.student = user.getStudent();
+        this.lecturer = user.getLecturer();
         this.token = user.getToken();
+        this.firstLogIn = user.isFirstLogIn();
+
     }
 
     public Integer getId() {
@@ -105,14 +108,6 @@ public class User {
         this.email = email;
     }
 
-    public String getDepartment() {
-        return department;
-    }
-
-    public void setDepartment(String department) {
-        this.department = department;
-    }
-
     public int getStudent() {
         return student;
     }
@@ -143,5 +138,13 @@ public class User {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public int isFirstLogIn() {
+        return firstLogIn;
+    }
+
+    public void setFirstLogIn(int firstLogIn) {
+        this.firstLogIn = firstLogIn;
     }
 }
