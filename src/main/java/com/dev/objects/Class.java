@@ -35,10 +35,10 @@ public class Class {
     public Class (){
 
         }
-    public Class (String date , String startTime , String endTime , String subject , User lecturer , Specialization specialization){
+    public Class (String date , String startTime  , String subject , User lecturer , Specialization specialization){
         this.date = date;
         this.startTime = startTime;
-        this.endTime = endTime;
+       // this.endTime = endTime;
         this.subject = subject ;
         this.lecturer= lecturer;
         this.specialization = specialization ;

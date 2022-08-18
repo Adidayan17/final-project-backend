@@ -3,6 +3,7 @@ package com.dev.controllers;
 import com.dev.Persist;
 import com.dev.objects.*;
 //import com.dev.utils.MessagesHandler;
+import com.dev.objects.Class;
 import org.springframework.beans.NotWritablePropertyException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -22,12 +23,7 @@ import java.util.Objects;
 public class TestController {
     @Autowired
     private Persist persist;
-//    private MessagesHandler messagesHandler;
-//
-//
-//    public TestController(MessagesHandler messagesHandler) {
-//        this.messagesHandler = messagesHandler;
-//    }
+
 
     @PostConstruct
     private void init () {
@@ -35,16 +31,72 @@ public class TestController {
 
 
     }
-    @RequestMapping(value = "create-client" ,method = RequestMethod.POST)
-    public boolean addClient (@RequestParam String clientName , String password ,String phoneNumber){
-      //  return persist.createClient(clientName,password,phoneNumber);
-        return true;
+    @RequestMapping(value = "create-user" ,method = RequestMethod.POST)
+    public boolean addUser (@RequestParam String name , String phone ,String email,String password , String type ){
+        return persist.createUser(name,phone,email,password,type);
     }
     @RequestMapping(value ="login")
-    public String login ( String password , String phoneNumber){
+    public String login ( String email , String password){
 
-        //return persist.logIn(password,phoneNumber);
-        return "tt";
+        return persist.logIn(email,password);
+
     }
 
+    @RequestMapping(value ="check-first-log-in")
+    public boolean checkFirstLogIn ( String token){
+
+        return persist.checkFirstLogIn(token);
+
+    }
+    @RequestMapping(value = "inc-first-logIn" ,method = RequestMethod.POST)
+    public void incFirstLogIn (@RequestParam String token){
+         persist.incFirstLogIn(token);
+    }
+    @RequestMapping(value ="get-specialization-by-id")
+    public Specialization getSpecializationById ( int specializationId){
+        return persist.getSpecializationById(specializationId);
+    }
+
+    @RequestMapping(value ="get-class-by-id")
+    public Class getClassById (int classId){
+        return persist.getClassById(classId);
+    }
+
+    @RequestMapping(value ="get-all-specializations")
+    public List<Specialization> getAllSpecializations (){
+        return persist.getAllSpecializations();
+    }
+
+    @RequestMapping(value ="get-specializations-for-lecturer")
+    public List<Specialization> getSpecializationsForLecturer (String token){
+        return persist.getSpecializationsForLecturer(token);
+    }
+    @RequestMapping(value ="get-Lecturers-for-specializations")
+    public List<User> getLecturersForSpecializations(int specializationId){
+        return persist.getLecturersForSpecializations(specializationId);
+    }
+    @RequestMapping(value ="get-classes-for-lecturer")
+    public List<Class> getClassesForLecturer (String token){
+        return persist.getClassesForLecturer(token);
+    }
+    @RequestMapping(value ="get-classes-for-student")
+    public List<Class> getClassesForStudent (String token){
+        return persist.getClassesForStudent(token);
+    }
+    @RequestMapping(value ="check-if-lecturer")
+    public boolean checkIfLecturer (String token) {
+        return persist.checkIfLecturer(token);
+    }
+    @RequestMapping(value ="change-specialization-for-lecturer")
+    public boolean changeSpecializationForLecturer(String token , int specializationId){
+        return persist.changeSpecializationForLecturer(token,specializationId);
+    }
+    @RequestMapping(value = "create-class" ,method = RequestMethod.POST)
+    public boolean createClass (@RequestParam String date , String startTime ,  String subject , String token, int specializationId ){
+        return persist.createClass(date,startTime,subject,token,specializationId);
+    }
+    @RequestMapping(value = "add-student-to-class" ,method = RequestMethod.POST)
+    public boolean addStudentToClass (@RequestParam String token ,int classId ){
+        return persist.addStudentToClass(token,classId);
+    }
 }

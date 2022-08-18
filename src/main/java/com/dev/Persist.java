@@ -55,7 +55,7 @@ public class Persist {
 
     // create user
 
-    public boolean creatUser (String name , String phone , String email  , String password, String type )
+    public boolean createUser(String name , String phone , String email  , String password, String type )
     {
         if (doseEmailAvailable(email)){
             Session session = sessionFactory.openSession();
@@ -73,14 +73,14 @@ public class Persist {
     }
 
     //login
-    public User logIn (String email , String password){
+    public String logIn (String email , String password){
 
         Session session = sessionFactory.openSession();
         User user = (User) session.createQuery("FROM User u WHERE u.email=:email AND u.password=:password")
                 .setParameter("email", email).setParameter("password",password)
                 .uniqueResult();
         session.close();
-        return user;
+        return user.getToken();
 
     }
     //get user by token
@@ -92,9 +92,30 @@ public class Persist {
         session.close();
         return user;
     }
+    // check first log in
+    public boolean checkFirstLogIn (String token)  {
+        User user = getUserByToken(token);
+        if (user.isFirstLogIn() == 1 ) {;
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    //inc first log in
+    public void incFirstLogIn (String token){
+        Session session = sessionFactory.openSession();
+        Transaction transaction = session.beginTransaction();
+        User userObject = getUserByToken(token);
+        int firstLogin = userObject.isFirstLogIn()+1;
+        userObject.setFirstLogIn(firstLogin);
+        session.saveOrUpdate(userObject);
+        transaction.commit();
+        session.close();
+    }
 
     //get specialization by id
-    private Specialization getSpecializationById (int specializationId){
+    public Specialization getSpecializationById (int specializationId){
         Session session = sessionFactory.openSession();
         Specialization specialization = (Specialization) session.createQuery("FROM Specialization s WHERE s.id =:specializationId")
                 .setParameter("specializationId",specializationId)
@@ -105,7 +126,7 @@ public class Persist {
 
     //get class by id
 
-    private Class getClassById (int classId){
+    public Class getClassById (int classId){
         Session session = sessionFactory.openSession();
         Class aClass = (Class) session.createQuery("FROM Class c WHERE c.id =:classId")
                 .setParameter("classId",classId)
@@ -113,6 +134,8 @@ public class Persist {
         session.close();
         return aClass;
     }
+
+
 
     // get all specializations
     public List<Specialization> getAllSpecializations (){
@@ -132,7 +155,7 @@ public class Persist {
     }
 
     // get lecturers for specialization
-    public List<User> getUserForSpecializations (int specializationId){
+    public List<User> getLecturersForSpecializations(int specializationId){
 
         Session session = sessionFactory.openSession();
         List<User> lecturers = session.createQuery(" SELECT lecturer FROM SpecializationForLecturer s WHERE s.specialization.id =:specializationId")
@@ -163,27 +186,7 @@ public class Persist {
     }
 
 
-    // check first log in
-    public boolean checkFirstLogIn (String token)  {
-        User user = getUserByToken(token);
-        if (user.isFirstLogIn() == 1 ) {;
-            return true;
-        } else {
-            return false;
-        }
-    }
 
-    //inc first log in
-    public void incFirstLogIn (String token){
-        Session session = sessionFactory.openSession();
-        Transaction transaction = session.beginTransaction();
-        User userObject = getUserByToken(token);
-        int firstLogin = userObject.isFirstLogIn()+1;
-        userObject.setFirstLogIn(firstLogin);
-        session.saveOrUpdate(userObject);
-        transaction.commit();
-        session.close();
-    }
 
     // check if lecturer
     public boolean checkIfLecturer (String token) {
@@ -259,11 +262,11 @@ public class Persist {
     }
 
     // create class
-    public boolean createClass (String date , String startTime , String endTime , String subject , String token, int specializationId){
+    public boolean createClass (String date , String startTime  , String subject , String token, int specializationId){
        if (checkIfLecturer(token)){
            Session session = sessionFactory.openSession();
            Transaction transaction = session.beginTransaction();
-           Class c = new Class( date ,  startTime ,  endTime , subject, getUserByToken(token),getSpecializationById(specializationId));
+           Class c = new Class( date ,  startTime  , subject, getUserByToken(token),getSpecializationById(specializationId));
            session.save(c);
            transaction.commit();
            session.close();
