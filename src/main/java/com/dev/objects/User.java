@@ -39,12 +39,13 @@ public class User {
 
     }
 
-    public User(String name, String phone, String email, String password, String type) {
+    public User(String name, String phone, String email, String password,String token, String type) {
 
         this.name = name;
         this.phone = phone;
         this.email = email;
         this.password = password;
+        this.token=token;
         switch (type) {
             case "student":
                 this.student = 1;

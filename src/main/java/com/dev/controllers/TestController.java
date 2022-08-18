@@ -58,7 +58,7 @@ public class TestController {
     }
 
     @RequestMapping(value ="get-class-by-id")
-    public Class getClassById (int classId){
+    public Class getClassById (Integer classId){
         return persist.getClassById(classId);
     }
 
@@ -83,17 +83,20 @@ public class TestController {
     public List<Class> getClassesForStudent (String token){
         return persist.getClassesForStudent(token);
     }
-    @RequestMapping(value ="check-if-lecturer")
-    public boolean checkIfLecturer (String token) {
-        return persist.checkIfLecturer(token);
+    @RequestMapping(value ="get-classes-by-specialization")
+    public List<Class> getClassesBySpecialization (int specializationId) {return persist.getClassesBySpecialization(specializationId);}
+
+    @RequestMapping(value ="check-user-type")
+    public int checkUserType (String token) {
+        return persist.checkUserType(token);
     }
     @RequestMapping(value ="change-specialization-for-lecturer")
     public boolean changeSpecializationForLecturer(String token , int specializationId){
         return persist.changeSpecializationForLecturer(token,specializationId);
     }
     @RequestMapping(value = "create-class" ,method = RequestMethod.POST)
-    public boolean createClass (@RequestParam String date , String startTime ,  String subject , String token, int specializationId ){
-        return persist.createClass(date,startTime,subject,token,specializationId);
+    public boolean createClass (@RequestParam String date , String startTime  , String token, int specializationId ){
+        return persist.createClass(date,startTime,token,specializationId);
     }
     @RequestMapping(value = "add-student-to-class" ,method = RequestMethod.POST)
     public boolean addStudentToClass (@RequestParam String token ,int classId ){

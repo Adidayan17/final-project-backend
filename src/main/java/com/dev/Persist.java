@@ -2,6 +2,7 @@ package com.dev;
 
 import com.dev.objects.*;
 import com.dev.objects.Class;
+import com.dev.utils.Utils;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
@@ -60,7 +61,7 @@ public class Persist {
         if (doseEmailAvailable(email)){
             Session session = sessionFactory.openSession();
             Transaction transaction = session.beginTransaction();
-            User user = new User( name ,  phone ,  email , password, type);
+            User user = new User( name ,  phone ,  email , password, Utils.createHash(name,password), type);
             session.save(user);
             transaction.commit();
             session.close();
@@ -80,8 +81,10 @@ public class Persist {
                 .setParameter("email", email).setParameter("password",password)
                 .uniqueResult();
         session.close();
-        return user.getToken();
-
+        if (user!= null) {
+            return user.getToken();
+        }
+        return null;
     }
     //get user by token
     public User getUserByToken (String token){
@@ -125,8 +128,7 @@ public class Persist {
     }
 
     //get class by id
-
-    public Class getClassById (int classId){
+    public Class getClassById (Integer classId){
         Session session = sessionFactory.openSession();
         Class aClass = (Class) session.createQuery("FROM Class c WHERE c.id =:classId")
                 .setParameter("classId",classId)
@@ -168,7 +170,7 @@ public class Persist {
     //get classes for lecturer
     public List<Class> getClassesForLecturer (String token){
         Session session = sessionFactory.openSession();
-        List<Class> classes = session.createQuery(" SELECT lecturer FROM Class c WHERE c.lecturer.token =:token")
+        List<Class> classes = session.createQuery(" FROM Class c WHERE c.lecturer.token =:token")
                 .setParameter("token", token)
                 .list();
         session.close();
@@ -178,8 +180,18 @@ public class Persist {
     // get classes for student
     public List<Class> getClassesForStudent (String token){
         Session session = sessionFactory.openSession();
-        List<Class> classes = session.createQuery(" SELECT student FROM StudentToClass s WHERE s.student.token =:token")
+        List<Class> classes = session.createQuery("  FROM StudentToClass s WHERE s.student.token =:token")
                 .setParameter("token", token)
+                .list();
+        session.close();
+        return classes;
+    }
+
+    // get classes by specialization
+    public List<Class> getClassesBySpecialization (int specializationId){
+        Session session = sessionFactory.openSession();
+        List<Class> classes = session.createQuery("  FROM Class s WHERE s.specialization.id =:specializationId")
+                .setParameter("specializationId", specializationId)
                 .list();
         session.close();
         return classes;
@@ -187,19 +199,20 @@ public class Persist {
 
 
 
-
     // check if lecturer
-    public boolean checkIfLecturer (String token) {
+    public int checkUserType (String token) {
         Session session = sessionFactory.openSession();
         User user = (User) session.createQuery("FROM User u WHERE u.token = :token")
                 .setParameter("token", token)
                 .uniqueResult();
         session.close();
-        if (user.getLecturer() == 1) {
-            return true ;
-        } else {
-            return false;
-
+        if (user.getStudent()==1 && user.getLecturer()==1 ){
+            return 2 ;
+        }else if (user.getLecturer() ==1) {
+            return 1 ;
+        }
+        else {
+            return 0;
         }
     }
 
@@ -262,11 +275,11 @@ public class Persist {
     }
 
     // create class
-    public boolean createClass (String date , String startTime  , String subject , String token, int specializationId){
-       if (checkIfLecturer(token)){
+    public boolean createClass (String date , String startTime   , String token, int specializationId){
+       if (checkUserType(token)!=0){
            Session session = sessionFactory.openSession();
            Transaction transaction = session.beginTransaction();
-           Class c = new Class( date ,  startTime  , subject, getUserByToken(token),getSpecializationById(specializationId));
+           Class c = new Class( date ,  startTime  , getUserByToken(token),getSpecializationById(specializationId));
            session.save(c);
            transaction.commit();
            session.close();
@@ -292,7 +305,7 @@ public class Persist {
             session.close();
             return true;
         }else {
-            return true;
+            return false;
         }
 
     }
