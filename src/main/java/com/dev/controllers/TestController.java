@@ -102,4 +102,12 @@ public class TestController {
     public boolean addStudentToClass (@RequestParam String token ,int classId ){
         return persist.addStudentToClass(token,classId);
     }
+    @RequestMapping (value ="remove-student-from-class",method = RequestMethod.POST)
+    public void removeStudentFromClass (@RequestParam  String token , int id ){
+        persist.removeStudentFromClass(token, id);
+    }
+    @RequestMapping (value ="delete-class",method = RequestMethod.POST)
+    public void deleteAppointmentForClient (@RequestParam  String token , int classId ){
+        persist.deleteAppointmentForClient(token, classId);
+    }
 }

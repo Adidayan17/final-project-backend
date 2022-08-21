@@ -310,6 +310,34 @@ public class Persist {
 
     }
 
+    // remove student from class
+    public void removeStudentFromClass(String token, int id) {
+        Session session = sessionFactory.openSession();
+        Transaction transaction = session.beginTransaction();
+        StudentToClass studentToClass = (StudentToClass) session.createQuery("FROM StudentToClass s WHERE s.student.token=:token AND s.aClass.id=:id")
+                .setParameter("token",token).setParameter("id",id)
+                .uniqueResult();
+            session.delete(studentToClass);
+            transaction.commit();
+            session.close();
+    }
+     // delete class
+     public void deleteAppointmentForClient(String token, int classId) {
+         Session session = sessionFactory.openSession();
+         Transaction transaction = session.beginTransaction();
+         Class aClass = (Class) session.load(Class.class, classId);
+         session.delete(aClass);
+         List<StudentToClass> classes = session.createQuery("  FROM StudentToClass s WHERE s.aClass.id =:classId")
+                 .setParameter("classId", classId)
+                 .list();
+         for (StudentToClass classToDelete : classes) {
+             session.delete(classToDelete);
+         }
+         transaction.commit();
+         session.close();
+
+     }
+
 
 
 
