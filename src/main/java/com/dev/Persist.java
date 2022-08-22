@@ -200,7 +200,7 @@ public class Persist {
                 .list();
         session.close();
 
-    return classes;
+        return getFutureClasses(classes );
     }
 
 
