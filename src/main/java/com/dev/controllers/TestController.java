@@ -107,7 +107,7 @@ public class TestController {
         persist.removeStudentFromClass(token, id);
     }
     @RequestMapping (value ="delete-class",method = RequestMethod.POST)
-    public void deleteAppointmentForClient (@RequestParam  String token , int classId ){
-        persist.deleteAppointmentForClient(token, classId);
+    public void deleteClass (@RequestParam  String token , int classId ){
+        persist.deleteClass(token, classId);
     }
 }

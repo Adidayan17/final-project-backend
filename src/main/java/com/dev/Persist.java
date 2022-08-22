@@ -14,6 +14,10 @@ import javax.annotation.PostConstruct;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @Component
@@ -174,17 +178,18 @@ public class Persist {
                 .setParameter("token", token)
                 .list();
         session.close();
-        return classes;
+       return getFutureClasses(classes );
+
     }
 
     // get classes for student
     public List<Class> getClassesForStudent (String token){
         Session session = sessionFactory.openSession();
-        List<Class> classes = session.createQuery("  FROM StudentToClass s WHERE s.student.token =:token")
+        List<Class> classes = session.createQuery("SELECT aClass  FROM StudentToClass s WHERE s.student.token =:token")
                 .setParameter("token", token)
                 .list();
         session.close();
-        return classes;
+       return getFutureClasses(classes );
     }
 
     // get classes by specialization
@@ -194,7 +199,8 @@ public class Persist {
                 .setParameter("specializationId", specializationId)
                 .list();
         session.close();
-        return classes;
+
+    return classes;
     }
 
 
@@ -322,7 +328,7 @@ public class Persist {
             session.close();
     }
      // delete class
-     public void deleteAppointmentForClient(String token, int classId) {
+     public void deleteClass(String token, int classId) {
          Session session = sessionFactory.openSession();
          Transaction transaction = session.beginTransaction();
          Class aClass = (Class) session.load(Class.class, classId);
@@ -337,6 +343,37 @@ public class Persist {
          session.close();
 
      }
+
+
+    public List<Class> getFutureClasses( List<Class> classes ) {
+        DateFormat formatter = new SimpleDateFormat("dd-MM-yyyy");
+        String date = (formatter.format(new Date())).toString();
+        List<Class> futureClasses = new ArrayList();
+        String frontDay = date.substring(0, 2);
+        String frontMonth = date.substring(3, 5);
+        String frontYear = date.substring(6, 10);
+        if (classes != null) {
+            for (Class aClass : classes) {
+                String formatDay = aClass.getDate().substring(0, 2);
+                String formatMonth = aClass.getDate().substring(3, 5);
+                String formatYear = aClass.getDate().substring(6, 10);
+                if (Integer.parseInt(formatYear) > Integer.parseInt(frontYear)) {
+                    futureClasses.add(aClass);
+                } else if (Integer.parseInt(formatYear) == Integer.parseInt(frontYear)) {
+                    if (Integer.parseInt(formatMonth) > Integer.parseInt(frontMonth)) {
+                        futureClasses.add(aClass);
+                    } else if (Integer.parseInt(formatMonth) == Integer.parseInt(frontMonth)) {
+                        if (Integer.parseInt(formatDay) > Integer.parseInt(frontDay)) {
+                            futureClasses.add(aClass);
+
+                        }
+                    }
+                }
+            }
+        }
+
+        return futureClasses;
+    }
 
 
 
