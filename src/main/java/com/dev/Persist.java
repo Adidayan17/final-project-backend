@@ -221,6 +221,16 @@ public class Persist {
             return 0;
         }
     }
+    // get user details for settings page
+    public User getUserDetails (String token) {
+        Session session = sessionFactory.openSession();
+        User user = (User) session.createQuery("FROM User u WHERE u.token = :token")
+                .setParameter("token", token)
+                .uniqueResult();
+        session.close();
+        user.setPassword("********");
+    return user;
+    }
 
     // dose lecturer have specialization
     public boolean doseLecturerHaveSpecialization(String token , int specializationId){

@@ -90,6 +90,10 @@ public class TestController {
     public int checkUserType (String token) {
         return persist.checkUserType(token);
     }
+    @RequestMapping(value ="get-user")
+    public User getUserDetails (String token) {
+        return persist.getUserDetails(token);
+    }
     @RequestMapping(value ="change-specialization-for-lecturer")
     public boolean changeSpecializationForLecturer(String token , int specializationId){
         return persist.changeSpecializationForLecturer(token,specializationId);
