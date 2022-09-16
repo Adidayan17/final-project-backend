@@ -103,6 +103,7 @@ public class Persist {
     public boolean checkFirstLogIn (String token)  {
         User user = getUserByToken(token);
         if (user.isFirstLogIn() == 1 ) {;
+            incFirstLogIn(token);
             return true;
         } else {
             return false;
@@ -205,13 +206,16 @@ public class Persist {
 
 
 
-    // check if lecturer
+    // check if lecturer 2 means both ,10 means admin user
     public int checkUserType (String token) {
         Session session = sessionFactory.openSession();
         User user = (User) session.createQuery("FROM User u WHERE u.token = :token")
                 .setParameter("token", token)
                 .uniqueResult();
         session.close();
+        if(user.getStudent()==10){
+            return 10;
+        }
         if (user.getStudent()==1 && user.getLecturer()==1 ){
             return 2 ;
         }else if (user.getLecturer() ==1) {
@@ -306,14 +310,30 @@ public class Persist {
 
     }
 
+    //dose student in class
+    public boolean doseStudentInClass (String token ,int classId ) {
+        Session session = sessionFactory.openSession();
+        User user =  (User) session.createQuery(" FROM StudentToClass  s WHERE s.aClass.id =:classId AND s.student.token=:token")
+                .setParameter("classId", classId) .setParameter("token",token)
+                        .uniqueResult();
+        session.close();
+        if (user == null ) {
+            return false;
+        }else {
+            return true;
+        }
+    }
+
+
     // add student to class
 
     public boolean addStudentToClass (String token ,int classId )
     {
         int student = getUserByToken(token).getId();
         int lecturer = getClassById(classId).getLecturer().getId();
-        if (student!=lecturer) {
+        if (student!=lecturer && !doseStudentInClass(token,classId) ) {
             Session session = sessionFactory.openSession();
+
             Transaction transaction = session.beginTransaction();
             StudentToClass studentToClass = new StudentToClass(getClassById(classId),getUserByToken(token));
             session.save(studentToClass);
