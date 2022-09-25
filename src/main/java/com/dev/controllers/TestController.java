@@ -26,92 +26,118 @@ public class TestController {
 
 
     @PostConstruct
-    private void init () {
-
+    private void init() {
 
 
     }
-    @RequestMapping(value = "create-user" ,method = RequestMethod.POST)
-    public boolean addUser (@RequestParam String name , String phone ,String email,String password , String type ){
-        return persist.createUser(name,phone,email,password,type);
-    }
-    @RequestMapping(value ="login")
-    public String login ( String email , String password){
 
-        return persist.logIn(email,password);
-
+    @RequestMapping(value = "create-user", method = RequestMethod.POST)
+    public boolean addUser(@RequestParam String name, String phone, String email, String password, String type) {
+        return persist.createUser(name, phone, email, password, type);
     }
 
-    @RequestMapping(value ="check-first-log-in")
-    public boolean checkFirstLogIn ( String token){
+    @RequestMapping(value = "login")
+    public String login(String email, String password) {
+
+        return persist.logIn(email, password);
+
+    }
+
+    @RequestMapping(value = "check-first-log-in")
+    public boolean checkFirstLogIn(String token) {
 
         return persist.checkFirstLogIn(token);
 
     }
-    @RequestMapping(value = "inc-first-logIn" ,method = RequestMethod.POST)
-    public void incFirstLogIn (@RequestParam String token){
-         persist.incFirstLogIn(token);
+
+    @RequestMapping(value = "inc-first-logIn", method = RequestMethod.POST)
+    public void incFirstLogIn(@RequestParam String token) {
+        persist.incFirstLogIn(token);
     }
-    @RequestMapping(value ="get-specialization-by-id")
-    public Specialization getSpecializationById ( int specializationId){
+
+    @RequestMapping(value = "get-specialization-by-id")
+    public Specialization getSpecializationById(int specializationId) {
         return persist.getSpecializationById(specializationId);
     }
 
-    @RequestMapping(value ="get-class-by-id")
-    public Class getClassById (Integer classId){
+    @RequestMapping(value = "get-class-by-id")
+    public Class getClassById(Integer classId) {
         return persist.getClassById(classId);
     }
 
-    @RequestMapping(value ="get-all-specializations")
-    public List<Specialization> getAllSpecializations (){
+    @RequestMapping(value = "get-all-specializations")
+    public List<Specialization> getAllSpecializations() {
         return persist.getAllSpecializations();
     }
 
-    @RequestMapping(value ="get-specializations-for-lecturer")
-    public List<Specialization> getSpecializationsForLecturer (String token){
+    @RequestMapping(value = "get-specializations-for-lecturer")
+    public List<Specialization> getSpecializationsForLecturer(String token) {
         return persist.getSpecializationsForLecturer(token);
     }
-    @RequestMapping(value ="get-Lecturers-for-specializations")
-    public List<User> getLecturersForSpecializations(int specializationId){
+
+    @RequestMapping(value = "get-Lecturers-for-specializations")
+    public List<User> getLecturersForSpecializations(int specializationId) {
         return persist.getLecturersForSpecializations(specializationId);
     }
-    @RequestMapping(value ="get-classes-for-lecturer")
-    public List<Class> getClassesForLecturer (String token){
-        return persist.getClassesForLecturer(token);
+
+    @RequestMapping(value = "get-classes-for-lecturer")
+    public List<Class> getClassesForLecturer(String token) {
+        return persist.getFutureClasses(persist.getClassesForLecturer(token));
     }
-    @RequestMapping(value ="get-classes-for-student")
-    public List<Class> getClassesForStudent (String token){
+
+    @RequestMapping(value = "get-classes-for-student")
+    public List<Class> getClassesForStudent(String token) {
         return persist.getClassesForStudent(token);
     }
-    @RequestMapping(value ="get-classes-by-specialization")
-    public List<Class> getClassesBySpecialization (int specializationId) {return persist.getClassesBySpecialization(specializationId);}
 
-    @RequestMapping(value ="check-user-type")
-    public int checkUserType (String token) {
+    @RequestMapping(value = "get-classes-by-specialization")
+    public List<Class> getClassesBySpecialization(int specializationId) {
+        return persist.getClassesBySpecialization(specializationId);
+    }
+
+    @RequestMapping(value = "check-user-type")
+    public int checkUserType(String token) {
         return persist.checkUserType(token);
     }
-    @RequestMapping(value ="get-user")
-    public User getUserDetails (String token) {
+
+    @RequestMapping(value = "get-user")
+    public User getUserDetails(String token) {
+
         return persist.getUserDetails(token);
     }
-    @RequestMapping(value ="change-specialization-for-lecturer")
-    public boolean changeSpecializationForLecturer(String token , int specializationId){
-        return persist.changeSpecializationForLecturer(token,specializationId);
+
+    @RequestMapping(value = "change-specialization-for-lecturer")
+    public boolean changeSpecializationForLecturer(String token, int specializationId) {
+        return persist.changeSpecializationForLecturer(token, specializationId);
     }
-    @RequestMapping(value = "create-class" ,method = RequestMethod.POST)
-    public boolean createClass (@RequestParam String date , String startTime  , String token, int specializationId ){
-        return persist.createClass(date,startTime,token,specializationId);
+
+    @RequestMapping(value = "create-class", method = RequestMethod.POST)
+    public boolean createClass(@RequestParam String date, String startTime, String token, int specializationId) {
+        return persist.createClass(date, startTime, token, specializationId);
     }
-    @RequestMapping(value = "add-student-to-class" ,method = RequestMethod.POST)
-    public boolean addStudentToClass (@RequestParam String token ,int classId ){
-        return persist.addStudentToClass(token,classId);
+
+    @RequestMapping(value = "add-student-to-class", method = RequestMethod.POST)
+    public boolean addStudentToClass(@RequestParam String token, int classId) {
+        return persist.addStudentToClass(token, classId);
     }
-    @RequestMapping (value ="remove-student-from-class",method = RequestMethod.POST)
-    public void removeStudentFromClass (@RequestParam  String token , int id ){
+
+    @RequestMapping(value = "remove-student-from-class", method = RequestMethod.POST)
+    public void removeStudentFromClass(@RequestParam String token, int id) {
         persist.removeStudentFromClass(token, id);
     }
-    @RequestMapping (value ="delete-class",method = RequestMethod.POST)
-    public void deleteClass (@RequestParam  String token , int classId ){
+
+    @RequestMapping(value = "delete-class", method = RequestMethod.POST)
+    public void deleteClass(@RequestParam String token, int classId) {
         persist.deleteClass(token, classId);
     }
+
+    @RequestMapping(value = "get-all-lecturers", method = RequestMethod.GET)
+    public List<FormatUser> getAllLecturers() {
+        return persist.getAllLecturers();
+    }
+//    @RequestMapping(value ="get-email-for-class-students")
+//    public List<String> getEmailForClassStudents (int classId){
+//     return    persist.getEmailForClassStudents(classId);
+//    }
+
 }

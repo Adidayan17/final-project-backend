@@ -3,6 +3,7 @@ package com.dev;
 import com.dev.objects.*;
 import com.dev.objects.Class;
 import com.dev.utils.Utils;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
@@ -60,16 +61,15 @@ public class Persist {
 
     // create user
 
-    public boolean createUser(String name , String phone , String email  , String password, String type )
-    {
-        if (doseEmailAvailable(email)){
+    public boolean createUser(String name, String phone, String email, String password, String type) {
+        if (doseEmailAvailable(email)) {
             Session session = sessionFactory.openSession();
             Transaction transaction = session.beginTransaction();
-            User user = new User( name ,  phone ,  email , password, Utils.createHash(name,password), type);
+            User user = new User(name, phone, email, password, Utils.createHash(name, password), type);
             session.save(user);
             transaction.commit();
             session.close();
-            if (user.id!=0 ){
+            if (user.id != 0) {
                 return true;
             }
         }
@@ -78,31 +78,44 @@ public class Persist {
     }
 
     //login
-    public String logIn (String email , String password){
+    public String logIn(String email, String password) {
 
         Session session = sessionFactory.openSession();
         User user = (User) session.createQuery("FROM User u WHERE u.email=:email AND u.password=:password")
-                .setParameter("email", email).setParameter("password",password)
+                .setParameter("email", email).setParameter("password", password)
                 .uniqueResult();
         session.close();
-        if (user!= null) {
+        if (user != null) {
             return user.getToken();
         }
         return null;
     }
+
     //get user by token
-    public User getUserByToken (String token){
+    public User getUserByToken(String token) {
         Session session = sessionFactory.openSession();
         User user = (User) session.createQuery("FROM User u WHERE u.token = :token")
-                .setParameter("token",token)
+                .setParameter("token", token)
                 .uniqueResult();
         session.close();
         return user;
     }
+
+    public User getUserById(int userId) {
+        Session session = sessionFactory.openSession();
+        User user = (User) session.createQuery("FROM User u WHERE u.id =:userId")
+                .setParameter("userId", userId)
+                .uniqueResult();
+        session.close();
+        return user;
+
+    }
+
     // check first log in
-    public boolean checkFirstLogIn (String token)  {
+    public boolean checkFirstLogIn(String token) {
         User user = getUserByToken(token);
-        if (user.isFirstLogIn() == 1 ) {;
+        if (user.isFirstLogIn() == 1) {
+            ;
             incFirstLogIn(token);
             return true;
         } else {
@@ -111,11 +124,11 @@ public class Persist {
     }
 
     //inc first log in
-    public void incFirstLogIn (String token){
+    public void incFirstLogIn(String token) {
         Session session = sessionFactory.openSession();
         Transaction transaction = session.beginTransaction();
         User userObject = getUserByToken(token);
-        int firstLogin = userObject.isFirstLogIn()+1;
+        int firstLogin = userObject.isFirstLogIn() + 1;
         userObject.setFirstLogIn(firstLogin);
         session.saveOrUpdate(userObject);
         transaction.commit();
@@ -123,35 +136,34 @@ public class Persist {
     }
 
     //get specialization by id
-    public Specialization getSpecializationById (int specializationId){
+    public Specialization getSpecializationById(int specializationId) {
         Session session = sessionFactory.openSession();
         Specialization specialization = (Specialization) session.createQuery("FROM Specialization s WHERE s.id =:specializationId")
-                .setParameter("specializationId",specializationId)
+                .setParameter("specializationId", specializationId)
                 .uniqueResult();
         session.close();
         return specialization;
     }
 
     //get class by id
-    public Class getClassById (Integer classId){
+    public Class getClassById(Integer classId) {
         Session session = sessionFactory.openSession();
         Class aClass = (Class) session.createQuery("FROM Class c WHERE c.id =:classId")
-                .setParameter("classId",classId)
+                .setParameter("classId", classId)
                 .uniqueResult();
         session.close();
         return aClass;
     }
 
 
-
     // get all specializations
-    public List<Specialization> getAllSpecializations (){
+    public List<Specialization> getAllSpecializations() {
         return sessionFactory.openSession().createQuery("FROM Specialization ").list();
 
     }
 
     //get specializations for lecturer
-    public List<Specialization> getSpecializationsForLecturer (String token){
+    public List<Specialization> getSpecializationsForLecturer(String token) {
 
         Session session = sessionFactory.openSession();
         List<Specialization> specializations = session.createQuery(" SELECT specialization FROM SpecializationForLecturer s WHERE s.lecturer.token =:token")
@@ -162,7 +174,7 @@ public class Persist {
     }
 
     // get lecturers for specialization
-    public List<User> getLecturersForSpecializations(int specializationId){
+    public List<User> getLecturersForSpecializations(int specializationId) {
 
         Session session = sessionFactory.openSession();
         List<User> lecturers = session.createQuery(" SELECT lecturer FROM SpecializationForLecturer s WHERE s.specialization.id =:specializationId")
@@ -173,82 +185,80 @@ public class Persist {
     }
 
     //get classes for lecturer
-    public List<Class> getClassesForLecturer (String token){
+    public List<Class> getClassesForLecturer(String token) {
         Session session = sessionFactory.openSession();
         List<Class> classes = session.createQuery(" FROM Class c WHERE c.lecturer.token =:token")
                 .setParameter("token", token)
                 .list();
         session.close();
-       return getFutureClasses(classes );
+        return classes;
 
     }
 
     // get classes for student
-    public List<Class> getClassesForStudent (String token){
+    public List<Class> getClassesForStudent(String token) {
         Session session = sessionFactory.openSession();
         List<Class> classes = session.createQuery("SELECT aClass  FROM StudentToClass s WHERE s.student.token =:token")
                 .setParameter("token", token)
                 .list();
         session.close();
-       return getFutureClasses(classes );
+        return getFutureClasses(classes);
     }
 
     // get classes by specialization
-    public List<Class> getClassesBySpecialization (int specializationId){
+    public List<Class> getClassesBySpecialization(int specializationId) {
         Session session = sessionFactory.openSession();
         List<Class> classes = session.createQuery("  FROM Class s WHERE s.specialization.id =:specializationId")
                 .setParameter("specializationId", specializationId)
                 .list();
         session.close();
 
-        return getFutureClasses(classes );
+        return getFutureClasses(classes);
     }
 
 
-
     // check if lecturer 2 means both ,10 means admin user
-    public int checkUserType (String token) {
+    public int checkUserType(String token) {
         Session session = sessionFactory.openSession();
         User user = (User) session.createQuery("FROM User u WHERE u.token = :token")
                 .setParameter("token", token)
                 .uniqueResult();
         session.close();
-        if(user.getStudent()==10){
+        if (user.getStudent() == 10) {
             return 10;
         }
-        if (user.getStudent()==1 && user.getLecturer()==1 ){
-            return 2 ;
-        }else if (user.getLecturer() ==1) {
-            return 1 ;
-        }
-        else {
+        if (user.getStudent() == 1 && user.getLecturer() == 1) {
+            return 2;
+        } else if (user.getLecturer() == 1) {
+            return 1;
+        } else {
             return 0;
         }
     }
+
     // get user details for settings page
-    public User getUserDetails (String token) {
+    public User getUserDetails(String token) {
         Session session = sessionFactory.openSession();
         User user = (User) session.createQuery("FROM User u WHERE u.token = :token")
                 .setParameter("token", token)
                 .uniqueResult();
         session.close();
         user.setPassword("********");
-    return user;
+        return user;
     }
 
     // dose lecturer have specialization
-    public boolean doseLecturerHaveSpecialization(String token , int specializationId){
+    public boolean doseLecturerHaveSpecialization(String token, int specializationId) {
         Session session = sessionFactory.openSession();
-        SpecializationForLecturer specializationLecturer=(SpecializationForLecturer) session
+        SpecializationForLecturer specializationLecturer = (SpecializationForLecturer) session
                 .createQuery("SELECT  specialization FROM SpecializationForLecturer s WHERE s.lecturer.token =:token AND s.specialization.id =:specializationId")
-                .setParameter("token",token)
-                .setParameter("specializationId",specializationId)
+                .setParameter("token", token)
+                .setParameter("specializationId", specializationId)
                 .uniqueResult();
         session.close();
-        if (specializationLecturer!=null)
-        {
+        if (specializationLecturer != null) {
             return true;
-        }else {
+        } else {
             return false;
         }
 
@@ -259,7 +269,7 @@ public class Persist {
     public void deleteSpecializationForLecturer(String token, int specializationId) {
         Session session = sessionFactory.openSession();
         Transaction transaction = session.beginTransaction();
-        SpecializationForLecturer specializationLecturer =(SpecializationForLecturer)  session.load(SpecializationForLecturer.class,specializationId);
+        SpecializationForLecturer specializationLecturer = (SpecializationForLecturer) session.load(SpecializationForLecturer.class, specializationId);
         session.delete(specializationLecturer);
         transaction.commit();
         session.close();
@@ -267,11 +277,11 @@ public class Persist {
 
     // add specialization for lecturer
 
-    public void addSpecializationForLecturer(String token,int specializationId) {
+    public void addSpecializationForLecturer(String token, int specializationId) {
 
-    Session session = sessionFactory.openSession();
-    Transaction transaction = session.beginTransaction();
-    SpecializationForLecturer specialization = new SpecializationForLecturer(getSpecializationById(specializationId),getUserByToken(token));
+        Session session = sessionFactory.openSession();
+        Transaction transaction = session.beginTransaction();
+        SpecializationForLecturer specialization = new SpecializationForLecturer(getSpecializationById(specializationId), getUserByToken(token));
         session.save(specialization);
         transaction.commit();
         session.close();
@@ -279,7 +289,7 @@ public class Persist {
 
 
     //change specialization to lecturer
-    public boolean changeSpecializationForLecturer(String token , int specializationId){
+    public boolean changeSpecializationForLecturer(String token, int specializationId) {
         if (getUserByToken(token) != null) {
             if (doseLecturerHaveSpecialization(token, specializationId)) {
                 deleteSpecializationForLecturer(token, specializationId);
@@ -295,31 +305,31 @@ public class Persist {
     }
 
     // create class
-    public boolean createClass (String date , String startTime   , String token, int specializationId){
-       if (checkUserType(token)!=0){
-           Session session = sessionFactory.openSession();
-           Transaction transaction = session.beginTransaction();
-           Class c = new Class( date ,  startTime  , getUserByToken(token),getSpecializationById(specializationId));
-           session.save(c);
-           transaction.commit();
-           session.close();
-           return true;
-       }else {
-           return false;
-       }
+    public boolean createClass(String date, String startTime, String token, int specializationId) {
+        if (checkUserType(token) != 0) {
+            Session session = sessionFactory.openSession();
+            Transaction transaction = session.beginTransaction();
+            Class c = new Class(date, startTime, getUserByToken(token), getSpecializationById(specializationId));
+            session.save(c);
+            transaction.commit();
+            session.close();
+            return true;
+        } else {
+            return false;
+        }
 
     }
 
     //dose student in class
-    public boolean doseStudentInClass (String token ,int classId ) {
+    public boolean doseStudentInClass(String token, int classId) {
         Session session = sessionFactory.openSession();
-        User user =  (User) session.createQuery(" FROM StudentToClass  s WHERE s.aClass.id =:classId AND s.student.token=:token")
-                .setParameter("classId", classId) .setParameter("token",token)
-                        .uniqueResult();
+        User user = (User) session.createQuery(" FROM StudentToClass  s WHERE s.aClass.id =:classId AND s.student.token=:token")
+                .setParameter("classId", classId).setParameter("token", token)
+                .uniqueResult();
         session.close();
-        if (user == null ) {
+        if (user == null) {
             return false;
-        }else {
+        } else {
             return true;
         }
     }
@@ -327,20 +337,19 @@ public class Persist {
 
     // add student to class
 
-    public boolean addStudentToClass (String token ,int classId )
-    {
+    public boolean addStudentToClass(String token, int classId) {
         int student = getUserByToken(token).getId();
         int lecturer = getClassById(classId).getLecturer().getId();
-        if (student!=lecturer && !doseStudentInClass(token,classId) ) {
+        if (student != lecturer && !doseStudentInClass(token, classId)) {
             Session session = sessionFactory.openSession();
 
             Transaction transaction = session.beginTransaction();
-            StudentToClass studentToClass = new StudentToClass(getClassById(classId),getUserByToken(token));
+            StudentToClass studentToClass = new StudentToClass(getClassById(classId), getUserByToken(token));
             session.save(studentToClass);
             transaction.commit();
             session.close();
             return true;
-        }else {
+        } else {
             return false;
         }
 
@@ -351,31 +360,41 @@ public class Persist {
         Session session = sessionFactory.openSession();
         Transaction transaction = session.beginTransaction();
         StudentToClass studentToClass = (StudentToClass) session.createQuery("FROM StudentToClass s WHERE s.student.token=:token AND s.aClass.id=:id")
-                .setParameter("token",token).setParameter("id",id)
+                .setParameter("token", token).setParameter("id", id)
                 .uniqueResult();
-            session.delete(studentToClass);
-            transaction.commit();
-            session.close();
+        session.delete(studentToClass);
+        transaction.commit();
+        session.close();
     }
-     // delete class
-     public void deleteClass(String token, int classId) {
-         Session session = sessionFactory.openSession();
-         Transaction transaction = session.beginTransaction();
-         Class aClass = (Class) session.load(Class.class, classId);
-         session.delete(aClass);
-         List<StudentToClass> classes = session.createQuery("  FROM StudentToClass s WHERE s.aClass.id =:classId")
-                 .setParameter("classId", classId)
-                 .list();
-         for (StudentToClass classToDelete : classes) {
-             session.delete(classToDelete);
-         }
-         transaction.commit();
-         session.close();
 
-     }
+    // delete class
+    public void deleteClass(String token, int classId) {
+        Session session = sessionFactory.openSession();
+        Transaction transaction = session.beginTransaction();
+        Class aClass = (Class) session.load(Class.class, classId);
+        session.delete(aClass);
+        List<StudentToClass> classes = session.createQuery("  FROM StudentToClass s WHERE s.aClass.id =:classId")
+                .setParameter("classId", classId)
+                .list();
+        for (StudentToClass classToDelete : classes) {
+            session.delete(classToDelete);
+        }
+        transaction.commit();
+        session.close();
+
+    }
+
+//     public List<String> getEmailForClassStudents (int classId){
+//        Session session = sessionFactory.openSession();
+//        List<String>emails = session.createQuery(" email  FROM StudentToCkass s WHERE s.class.id =:classId")
+//                        .setParameter("classId", classId)
+//                        .list();
+//         session.close();
+//         return emails;
+//     }
 
 
-    public List<Class> getFutureClasses( List<Class> classes ) {
+    public List<Class> getFutureClasses(List<Class> classes) {
         DateFormat formatter = new SimpleDateFormat("dd-MM-yyyy");
         String date = (formatter.format(new Date())).toString();
         List<Class> futureClasses = new ArrayList();
@@ -406,11 +425,43 @@ public class Persist {
     }
 
 
+    public List<Class> getLecturerReport(int lecId, String month, String year) {
 
+        List<Class> classes = getClassesForLecturer(getUserById(lecId).getToken());
+        List<Class> thisMonthClasses = new ArrayList();
+
+        if (classes != null) {
+            for (Class aClass : classes) {
+                String formatMonth = aClass.getDate().substring(3, 5);
+                String formatYear = aClass.getDate().substring(6, 10);
+                if (Integer.parseInt(formatYear) == Integer.parseInt(year)) {
+                    if (Integer.parseInt(formatMonth) == Integer.parseInt(month)) {
+                        thisMonthClasses.add(aClass);
+                    }
+                }
+            }
+        }
+        return thisMonthClasses;
+
+    }
+
+    // get all Lecturers for reports
+    public List<FormatUser> getAllLecturers() {
+        Session session = sessionFactory.openSession();
+        List<User> lecturers = session.createQuery("  FROM User u WHERE u.lecturer =:type")
+                .setParameter("type", 1)
+                .list();
+        session.close();
+        ArrayList<FormatUser> temp = new ArrayList<>();
+        for (User lecturer:lecturers) {
+            FormatUser user=new FormatUser(lecturer.getId(),lecturer.getName(),lecturer.getToken());
+            temp.add(user);
+        }
+        return temp;
+    }
 
 
 }
-
 
 
 
