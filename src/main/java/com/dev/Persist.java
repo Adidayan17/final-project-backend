@@ -414,7 +414,7 @@ public class Persist {
     public List<Class> getFutureClasses(List<Class> classes) {
         DateFormat formatter = new SimpleDateFormat("dd-MM-yyyy");
         String date = (formatter.format(new Date())).toString();
-        List<Class> futureClasses = new ArrayList();
+        List<Class> futureClasses = new ArrayList<>();
         String frontDay = date.substring(0, 2);
         String frontMonth = date.substring(3, 5);
         String frontYear = date.substring(6, 10);
@@ -443,10 +443,8 @@ public class Persist {
 
 
     public List<Class> getLecturerReport(int lecId, String month, String year) {
-
         List<Class> classes = getClassesForLecturer(getUserById(lecId).getToken());
-        List<Class> thisMonthClasses = new ArrayList();
-
+        List<Class> thisMonthClasses = new ArrayList<>();
         if (classes != null) {
             for (Class aClass : classes) {
                 String formatMonth = aClass.getDate().substring(3, 5);
@@ -459,7 +457,6 @@ public class Persist {
             }
         }
         return thisMonthClasses;
-
     }
 
     // get all Lecturers for reports

@@ -135,11 +135,16 @@ public class TestController {
     public List<FormatUser> getAllLecturers() {
         return persist.getAllLecturers();
     }
-    @RequestMapping(value ="get-students-email-for-class")
-    public List<String> getStudentsEmailsForClass (int classId){
-     return    persist.getStudentsEmailsForClass(classId);
+
+    @RequestMapping(value = "get-report")
+    public List<Class> getReports(int lecId, String month, String year) {
+        return persist.getLecturerReport(lecId, month, year);
+    }
+
+    @RequestMapping(value = "get-students-email-for-class")
+    public List<String> getStudentsEmailsForClass(int classId) {
+        return persist.getStudentsEmailsForClass(classId);
     }
 
 
-
- }
+}
