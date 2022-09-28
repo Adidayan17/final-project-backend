@@ -205,6 +205,23 @@ public class Persist {
         return getFutureClasses(classes);
     }
 
+    // get students for class
+
+    public List<String> getStudentsEmailsForClass (int classId){
+        Session session = sessionFactory.openSession();
+        List<User> students = session.createQuery("SELECT student FROM StudentToClass s WHERE s.aClass.id=:classId")
+                .setParameter("classId",classId)
+                .list();
+        session.close();
+
+
+        ArrayList<String> emails = new ArrayList<>();
+        for (User student:students) {
+            emails.add(student.getEmail());
+        }
+        return emails;
+
+    }
     // get classes by specialization
     public List<Class> getClassesBySpecialization(int specializationId) {
         Session session = sessionFactory.openSession();
