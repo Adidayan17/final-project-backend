@@ -34,18 +34,23 @@ public class User {
     @Column(name = "first_log_in")
     private int firstLogIn;
 
+    //collegeType 0 means "ashkelon" 1 means "gan yavne"
+    @Column(name = "college_type")
+    private Integer collegeType;
+
 
     public User() {
 
     }
 
-    public User(String name, String phone, String email, String password,String token, String type) {
+    public User(String name, String phone, String email, String password, String token, String type, Integer collegeType) {
 
         this.name = name;
         this.phone = phone;
         this.email = email;
         this.password = password;
-        this.token=token;
+        this.token = token;
+        this.collegeType = collegeType;
         switch (type) {
             case "student":
                 this.student = 1;
@@ -74,6 +79,7 @@ public class User {
         this.lecturer = user.getLecturer();
         this.token = user.getToken();
         this.firstLogIn = user.isFirstLogIn();
+        this.collegeType = user.getCollegeType();
 
     }
 
@@ -147,5 +153,13 @@ public class User {
 
     public void setFirstLogIn(int firstLogIn) {
         this.firstLogIn = firstLogIn;
+    }
+
+    public Integer getCollegeType() {
+        return collegeType;
+    }
+
+    public void setCollegeType(Integer ganYavne) {
+        this.collegeType = ganYavne;
     }
 }

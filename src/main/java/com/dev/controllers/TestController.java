@@ -32,8 +32,8 @@ public class TestController {
     }
 
     @RequestMapping(value = "create-user", method = RequestMethod.POST)
-    public boolean addUser(@RequestParam String name, String phone, String email, String password, String type) {
-        return persist.createUser(name, phone, email, password, type);
+    public boolean addUser(@RequestParam String name, String phone, String email, String password, String type, Integer collegeType) {
+        return persist.createUser(name, phone, email, password, type, collegeType);
     }
 
     @RequestMapping(value = "login")
@@ -134,6 +134,11 @@ public class TestController {
     @RequestMapping(value = "get-all-lecturers", method = RequestMethod.GET)
     public List<FormatUser> getAllLecturers() {
         return persist.getAllLecturers();
+    }
+
+    @RequestMapping(value = "get-all-lecturers-college", method = RequestMethod.GET)
+    public List<FormatUser> getAllLecturersCollege(int collegeType) {
+        return persist.getAllLecturersByCollege(collegeType);
     }
 
     @RequestMapping(value = "get-report")

@@ -61,11 +61,11 @@ public class Persist {
 
     // create user
 
-    public boolean createUser(String name, String phone, String email, String password, String type) {
+    public boolean createUser(String name, String phone, String email, String password, String type, Integer collegeType) {
         if (doseEmailAvailable(email)) {
             Session session = sessionFactory.openSession();
             Transaction transaction = session.beginTransaction();
-            User user = new User(name, phone, email, password, Utils.createHash(name, password), type);
+            User user = new User(name, phone, email, password, Utils.createHash(name, password), type, collegeType);
             session.save(user);
             transaction.commit();
             session.close();
@@ -207,21 +207,22 @@ public class Persist {
 
     // get students for class
 
-    public List<String> getStudentsEmailsForClass (int classId){
+    public List<String> getStudentsEmailsForClass(int classId) {
         Session session = sessionFactory.openSession();
         List<User> students = session.createQuery("SELECT student FROM StudentToClass s WHERE s.aClass.id=:classId")
-                .setParameter("classId",classId)
+                .setParameter("classId", classId)
                 .list();
         session.close();
 
 
         ArrayList<String> emails = new ArrayList<>();
-        for (User student:students) {
+        for (User student : students) {
             emails.add(student.getEmail());
         }
         return emails;
 
     }
+
     // get classes by specialization
     public List<Class> getClassesBySpecialization(int specializationId) {
         Session session = sessionFactory.openSession();
@@ -467,14 +468,27 @@ public class Persist {
                 .list();
         session.close();
         ArrayList<FormatUser> temp = new ArrayList<>();
-        for (User lecturer:lecturers) {
-            FormatUser user=new FormatUser(lecturer.getId(),lecturer.getName(),lecturer.getToken());
+        for (User lecturer : lecturers) {
+            FormatUser user = new FormatUser(lecturer.getId(), lecturer.getName(), lecturer.getToken());
             temp.add(user);
         }
         return temp;
     }
 
-
+    // get all Lecturers for reports by college
+    public List<FormatUser> getAllLecturersByCollege(int collegeType) {
+        Session session = sessionFactory.openSession();
+        List<User> lecturers = session.createQuery("  FROM User u WHERE u.lecturer =:type AND u.collegeType=:collegeType")
+                .setParameter("type", 1).setParameter("collegeType", collegeType)
+                .list();
+        session.close();
+        ArrayList<FormatUser> temp = new ArrayList<>();
+        for (User lecturer : lecturers) {
+            FormatUser user = new FormatUser(lecturer.getId(), lecturer.getName(), lecturer.getToken());
+            temp.add(user);
+        }
+        return temp;
+    }
 }
 
 
